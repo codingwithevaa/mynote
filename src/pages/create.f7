@@ -1,0 +1,105 @@
+<template>
+    <div class="page" data-name="create">
+        <!-- ini untuk navbar -->
+        <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+                <div class="left">
+                    <div class="title-navbar" @click=${reload}>
+                        <span> My note </span>
+                        <i class="f7-icons">book</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ini untuk conten -->
+        <div class="page-content">
+            <div class="block">
+                <h2>Create Note</h2>
+                <div class="list form-input">
+                    <ul>
+                        <li class="item-content item-input item-input-outline">
+                            <div class="item-media">
+                                <i class="icon demo-list-icon"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-label">Judul</div>
+                                <div class="item-input-wrap">
+                                    <input type="text" name="judul" placeholder="masukkan judul note" id="judul" />
+                                    <span class="input-clear-button"></span>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content item-input item-input-outline">
+                            <div class="item-media">
+                                <i class="icon demo-list-icon"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-label">deskripsi</div>
+                                <div class="item-input-wrap">
+                                    <textarea class="resizable" placeholder="masukkan note"
+                                        id="deskripsi"></textarea>
+                                    <span class="input-clear-button"></span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <button class="button  button-fill submit-button" @click=${inputNote}>Submit</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</template>
+<script>
+
+    export default (props, { $f7, $f7router, $ }) => {
+
+
+
+        // FUNTION UNTUK INSERT NOTE BARU
+        const createNotes = (newNote) => {
+            const notes = JSON.parse(localStorage.getItem('notes')) || [];
+            notes.push(newNote);
+            localStorage.setItem('notes', JSON.stringify(notes));
+        };
+
+        // FUNCITON HANDLE ALERT
+        const handleAlert = (newNote) => {
+            $f7.dialog.confirm('anda ingin menyimpan note?', function () {
+                $f7.dialog.alert('nite berhasil dibuat', () => {
+                    createNotes(newNote);
+                    reload()
+                });
+            });
+        };
+
+        // FUNCTION HANLDE SUBMIT BUTTON
+        const inputNote = () => {
+
+            // AMBIL DATA INPUTAN DARI FORM
+            const judul = $('#judul').val();
+            const deskripsi = $('#deskripsi').val();
+
+
+            // MEMBUAT OBJECT NOTE BARU
+            const newNote = {
+                id: Date.now(),
+                judul,
+                deskripsi,
+                create: new Date().toDateString().slice()
+            };
+
+            handleAlert(newNote);
+        };
+
+
+        // FUNTIN UNTUK REALOAD
+        function reload() {
+            location.reload(true);
+        };
+
+        return $render;
+    }
+</script>

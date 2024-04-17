@@ -1,0 +1,58 @@
+/* Your app custom styles here */
+
+.title-navbar {
+    font-size: large;
+    margin-left: 2em;
+    display: flex;
+    font-weight: bold;
+    font-size: x-large;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.form-input {
+    margin: auto;
+    padding: 10px;
+    
+}
+
+
+.submit-button {
+    max-width: 50%;
+    margin: auto;
+    padding: 10px;
+}
+
+
+
+
+@media screen and (max-width: 1440px) {
+    .notes {
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    .deskripsi {
+        max-width: 300px;
+        min-height: 100px;
+    }
+}
+
+
+@media screen and (max-width: 480px) {
+    .notes {
+        display: flex;
+        justify-content: center;
+    }
+
+    .title-navbar {
+        margin-left: 1em;
+    }
+
+    .deskripsi {
+        max-width: fit-content;
+        min-width: 230px;
+        min-height: 60px;
+    }
+}

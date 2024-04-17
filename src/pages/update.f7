@@ -1,0 +1,118 @@
+<template>
+    <div class="page" data-name="update">
+        <!-- ini untuk navbar -->
+        <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+                <div class="left">
+                    <div class="title-navbar" @click=${reload}>
+                        <span> My note </span>
+                        <i class="f7-icons">book</i>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ini untu content -->
+        <div class="page-content">
+            <div class="block">
+                <h2>Edit Note</h2>
+                <div class="list form-input">
+                    <ul>
+                        <li class="item-content item-input item-input-outline">
+                            <div class="item-media">
+                                <i class="icon demo-list-icon"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-label">Judul</div>
+                                <div class="item-input-wrap">
+                                    <input type="text" name="judul" placeholder="masukkan judul note" id="ujudul" />
+                                    <span class="input-clear-button"></span>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="item-content item-input item-input-outline">
+                            <div class="item-media">
+                                <i class="icon demo-list-icon"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-label">deskripsi</div>
+                                <div class="item-input-wrap">
+                                    <textarea class="resizable" placeholder="masukkan note" id="udeskripsi"></textarea>
+                                    <span class="input-clear-button"></span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <button class="button  button-fill submit-button " @click=${updateNote}> Submit </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+
+    export default (props, { $f7, $f7router, $ }) => {
+
+        // MENGAMBIL DATA YANG DIPERLUKAN UNTUK MELAKUKAN EDIT
+        const id = props.id;
+        const notesFromDb = JSON.parse(localStorage.getItem('notes')) || [];
+
+
+
+        // MENCARI NOTE YANG AKAN DIEDIT DAN
+        // MEMASUKKAN VALUE DARI NOTE SEBELUMNYA KE FORM INPUT
+        const getValueFromDb = () => {
+            fetch('http://localhost:5173/', {
+                method: "GET",
+                headers: {
+                    'Accept': 'text/html'
+                }
+            }).then(res => {
+                const a = notesFromDb.find(element => { return element.id == id; });
+                $('#ujudul').val(a.judul);
+                $('#udeskripsi').val(a.deskripsi);
+            });
+        };
+
+        getValueFromDb();
+
+        // ========================== PROSES UPDATE DATA ===========================
+
+        // FUNCTION UNTUK MELAKUKAN UPDATE
+        const updateNote = () => {
+            notesFromDb.find(element => {
+                if (element.id == id) {
+                    element.judul = $('#ujudul').val();
+                    element.deskripsi = $('#udeskripsi').val();
+                    element.create = new Date().toDateString().slice();
+                }
+            });
+
+            handleAlert(notesFromDb);
+        };
+
+
+        // FUNCTION HANDLE ALERT
+        function handleAlert(notesUpdate) {
+            $f7.dialog.confirm('anda ingin menyimpan note?', function () {
+                localStorage.setItem('notes', JSON.stringify(notesUpdate));
+                $f7.dialog.alert('nite berhasil di edit', () => {
+                    reload();
+                });
+
+            });
+        }
+
+        // ============================== RELOAD FUNCITON ============================
+
+        function reload() {
+            location.reload(true);
+        };
+
+        return $render;
+    }
+</script>

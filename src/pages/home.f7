@@ -1,0 +1,147 @@
+<template>
+  <div class="page" data-name="home">
+    <!-- ini untuk navbar -->
+    <div class="navbar">
+      <div class="navbar-bg"></div>
+      <div class="navbar-inner" style="display: flex; justify-content: space-between;">
+        <div class="left">
+          <div class="title-navbar" @click=${reload}>
+            <span> My note </span>
+            <i class="f7-icons">book</i>
+          </div>
+        </div>
+        <div class="rigth">
+          <a href="/input/" class="link">
+            <button class="button">
+              <i class="f7-icons">bag_badge_plus</i>
+            </button>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ini untuk menampung content -->
+    <div class="page-content">
+      <div class="block">
+        <div class="list links-list">
+          <ul id="notes" class="notes" style="display: flex; flex-flow: row wrap; align-items: flex-start;">
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+
+  export default (props, { $f7, $ }) => {
+
+    // GET DATA DARI LOCALS STORAGE
+    const notesFromDb = JSON.parse(localStorage.getItem('notes')) || [];
+    function getData() {
+      fetch('http://localhost:5173/', {
+        method: "GET",
+        headers: {
+          'Accept': 'text/html'
+        }
+      }).then(res => {
+
+        const notes = createElemntLoop(notesFromDb);
+
+        // CEK APAKAH ADA DATA ATAU TIDAK DIDALAM LOCAL STORAGE
+        if (notesFromDb.length == 0) {
+          $('#notes').html('<h1>Note tidak ada .......</h>');
+        } else {
+          $('#notes').html(notes);
+        }
+      });
+    }
+
+
+    //CREATE ELEMENT CARD UNTUK MENAMPUNG NOTE DARI LOCAL STORAGE 
+    function createElemntLoop(data) {
+      var notes = '';
+      notesFromDb.forEach(element => {
+        notes += `
+          <li >
+            <div class="card" >
+                <div class="card-header">${element.judul}</div>
+                    <div class="card-content card-content-padding">
+                       <div class="deskripsi">${element.deskripsi}</div>
+                    </div>
+                <div class="card-footer" style="display: flex;">
+                  
+                <div class="left" style=" width: 50%;">
+                  ${element.create}
+                </div>
+                <div class="rigth" style="display: flex; gap: 10px; width: 45%;" >
+                  <button class="button button-fill update-button" id="data" data-id=${element.id}>
+                        Edit
+                  </button>
+                  <button class="button button-fill delete-button" id="data" data-id=${element.id}>
+                        Delete
+                  </button>
+                </div>    
+                </div>
+            </div>
+            
+          </li>
+          `;
+      });
+      return notes;
+    }
+
+
+
+    // RUN GET DATA
+    getData();
+
+    // ============================== UPDATE HANDLER ===============================
+
+    $(document).on('click', '.update-button', function () {
+      var id = $(this).data('id');
+      $f7.views.main.router.navigate("/edit/" + id + '/');
+    });
+
+
+
+    // ============================== DELETE HANDLER ===============================
+
+    // FUNCTION UNTUK DELETE DATA YANG ADA DI LOCAL STORAGE BY ID
+    const deleteNote = (id) => {
+      console.log("id from delte note ", id);
+      const updateNotes = notesFromDb.filter((note) => {
+        return note.id != id;
+      });
+
+      localStorage.setItem('notes', JSON.stringify(updateNotes));
+      location.reload(true);
+    };
+
+    // FUNCTION UNTUK MEMBUAT ALERT
+    const handleAlert = (id) => {
+      $f7.dialog.confirm('apakah anda ingin menghapus note ini ?', "delete", () => {
+        deleteNote(id);
+      }, () => {
+        getData();
+      });
+    };
+
+
+
+    // FUNCTION UNTUK HANDLE KETIKA KLIK BUTTON HAPUS
+    $(document).on('click', '.delete-button', function () {
+      var id = $(this).data('id');
+      handleAlert(id);
+    });
+
+
+    // ================================ RELOAD FUNCTION ============================
+
+    const reload = () => {
+      location.reload(true);
+    };
+
+    return $render;
+  }
+</script>
